@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 
-function QuestionItem({ question }) {
+function QuestionItem({ question, onCorrectAnswerChange }) {
   const { id, prompt, answers, correctIndex } = question;
+  const [newCorrectIndex, setNewCorrectIndex] = useState(correctIndex);
 
   const options = answers.map((answer, index) => (
     <option key={index} value={index}>
@@ -9,15 +10,24 @@ function QuestionItem({ question }) {
     </option>
   ));
 
+  const handleCorrectAnswerChange = (e) => {
+    const newIndex = parseInt(e.target.value);
+    setNewCorrectIndex(newIndex);
+
+    // Send a PATCH request to update the correct answer on the server
+    onCorrectAnswerChange(question.id, newIndex);
+  };
+
   return (
     <li>
       <h4>Question {id}</h4>
       <h5>Prompt: {prompt}</h5>
       <label>
         Correct Answer:
-        <select defaultValue={correctIndex}>{options}</select>
+        <select value={newCorrectIndex} onChange={handleCorrectAnswerChange}>
+          {options}
+        </select>
       </label>
-      <button>Delete Question</button>
     </li>
   );
 }
